@@ -6,6 +6,7 @@ public class Product {
     Double Price;
     int Image; //referencing the resource id (R.drawable.id) of the images
 
+    public Product(){}
     public Product(String name, String description, Double price, int image) {
         Name = name;
         Description = description;
