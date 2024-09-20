@@ -1,6 +1,7 @@
 package com.example.prm392_asm;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +35,24 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         holder.imageView.setImageResource(_productList.get(position).getImage());
         holder.textView.setText(_productList.get(position).getName());
+
+        // Xử lý sự kiện khi người dùng bấm vào sản phẩm
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Tạo Intent để mở ProductDetailActivity
+                Intent intent = new Intent(_context, ProductDetailActivity.class);
+
+                // Truyền dữ liệu sản phẩm sang Activity
+                intent.putExtra("productName", _productList.get(position).getName());
+                intent.putExtra("productDescription", _productList.get(position).getDescription());
+                intent.putExtra("productPrice", _productList.get(position).getPrice());
+                intent.putExtra("productImage", _productList.get(position).getImage());
+
+                // Bắt đầu Activity
+                _context.startActivity(intent);
+            }
+        });
     }
 
     @Override
