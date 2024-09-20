@@ -17,8 +17,22 @@ public class ListOfProductInCart {
         this.productList = productList;
     }
 
-    public void add(ProductInCart product){
-        this.productList.add(product);
+    public void add(ProductInCart product) throws Exception {
+        try{
+
+            for (ProductInCart pro: this.productList) {
+                if(pro.Name.equals(product.Name)){
+                    pro.quantity += product.quantity;
+                    return;
+                }
+            }
+            this.productList.add(product);
+
+        }
+        catch (Exception ex){
+            throw new Exception(ex.getMessage());
+        }
+
     }
 
     public void Update(ProductInCart product) throws Exception {
