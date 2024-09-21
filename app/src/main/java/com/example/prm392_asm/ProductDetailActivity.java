@@ -4,7 +4,9 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,14 +20,31 @@ import android.content.Intent;
 import android.widget.Toast;
 import android.Manifest;
 
+import com.google.gson.Gson;
+
 public class ProductDetailActivity extends AppCompatActivity {
     private ImageView productImageView;
     private TextView productNameTextView, productDescriptionTextView, productPriceTextView;
     private Button addToCartButton;
     private ListOfProductInCart cart; // Khởi tạo giỏ hàng
-
+    ImageView toolbarIcon;//khoi tao nut back
     private static final String CHANNEL_ID = "ProductNotifications";
+    private void saveProductToPreferences(ProductInCart product) {
+        new AsyncTask<ProductInCart, Void, Void>() {
+            @Override
+            protected Void doInBackground(ProductInCart... products) {
+                SharedPreferences sharedPreferences = getSharedPreferences("MyShoppingCart", MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
 
+                String productJson = new Gson().toJson(products[0]);
+                editor.putString(products[0].getName(), productJson);
+                editor.apply();
+
+                return null;
+            }
+
+        }.execute(product);
+    }
     /*private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = "Product Notifications";
@@ -45,7 +64,13 @@ public class ProductDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_detail);
-
+        toolbarIcon = findViewById(R.id.toolbar_icon);
+        toolbarIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed(); // Quay lại activity trước đó
+            }
+        });
         /*createNotificationChannel(); */// Gọi hàm này ở đây
 
         // Kiểm tra quyền POST_NOTIFICATIONS
@@ -56,7 +81,9 @@ public class ProductDetailActivity extends AppCompatActivity {
         }*/
 
         // Khởi tạo giỏ hàng
-        cart = new ListOfProductInCart();
+        cart = new ListOfProductInCart(this);
+
+
 
         // Khởi tạo các View
         productImageView = findViewById(R.id.product_image);
@@ -78,6 +105,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         productPriceTextView.setText(String.format("$%.2f", productPrice));
         productImageView.setImageResource(productImage);
 
+
         // Thêm sự kiện cho nút "Add to Cart"
         addToCartButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -87,13 +115,13 @@ public class ProductDetailActivity extends AppCompatActivity {
                 try {
                     ProductInCart existingProduct = cart.GetProductByName(productName);
                     if (existingProduct != null) {
-                        // Nếu sản phẩm đã có trong giỏ hàng, tăng số lượng
                         existingProduct.setQuantity(existingProduct.getQuantity() + 1);
                         cart.Update(existingProduct);
+                        saveProductToPreferences(existingProduct); // Lưu sản phẩm đã cập nhật
                         Toast.makeText(ProductDetailActivity.this, productName + " has been added to cart", Toast.LENGTH_SHORT).show();
                     } else {
-                        // Nếu sản phẩm chưa có trong giỏ hàng, thêm mới
                         cart.add(productInCart);
+                        saveProductToPreferences(productInCart); // Lưu sản phẩm mới
                         Toast.makeText(ProductDetailActivity.this, productName + " has been added to cart", Toast.LENGTH_SHORT).show();
                     }
                 } catch (Exception e) {

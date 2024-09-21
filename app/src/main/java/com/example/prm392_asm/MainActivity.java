@@ -1,8 +1,10 @@
 package com.example.prm392_asm;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -67,4 +69,14 @@ public class MainActivity extends AppCompatActivity {
             productModel.add(new Product(productName[i], productDescription[i], price, productImage[i]));
         }
     }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.cart_item) {
+            // Mở Activity giỏ hàng
+            startActivity(new Intent(this, CartActivity.class));
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
 }
