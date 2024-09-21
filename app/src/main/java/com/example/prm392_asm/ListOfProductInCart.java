@@ -9,6 +9,7 @@
     import java.util.ArrayList;
 
     public class ListOfProductInCart {
+        //property
         ArrayList<ProductInCart> productList;
         private static final String PREFS_NAME = "cart_prefs";
         private static final String CART_KEY = "cart_items";
@@ -17,10 +18,11 @@
             this.productList = new ArrayList<>();
         }
 
+        //get method for productList
         public ArrayList<ProductInCart> getProductList() {
             return productList;
         }
-
+        //set method for productList
         public void setProductList(ArrayList<ProductInCart> productList) {
             this.productList = productList;
         }
@@ -45,28 +47,29 @@
             return json != null ? gson.fromJson(json, new TypeToken<ArrayList<ProductInCart>>(){}.getType()) : new ArrayList<>();
         }
 
+        //Add method for add product to the cart
         public void add(ProductInCart product) throws Exception {
             try {
                 boolean exists = false;
                 for (ProductInCart pro : this.productList) {
                     if (pro.getName().equals(product.getName())) {
-                        // Tăng số lượng nếu sản phẩm đã tồn tại
+                        // Increase the quantity if the product is exist
                         pro.setQuantity(pro.getQuantity() + product.getQuantity());
                         exists = true;
                         break;
                     }
                 }
-                // Thêm sản phẩm mới nếu chưa tồn tại
+                // add product if it not exist
                 if (!exists) {
                     this.productList.add(product);
                 }
                 saveCart(context);
-            } catch (Exception ex) {
-                // Ném lại ngoại lệ với thông điệp cụ thể
+            } catch (Exception ex){
                 throw new Exception("Không thể thêm sản phẩm vào giỏ hàng: " + ex.getMessage());
             }
         }
 
+        //Update method for update the quantity for productInCart
         public void Update(ProductInCart product) throws Exception {
             for (ProductInCart pro : this.productList) {
                 if (pro.getName().equals(product.getName())) {
@@ -78,6 +81,7 @@
             throw new Exception("Sản phẩm không tồn tại trong giỏ hàng");
         }
 
+        //Delete method for delete the product from the cart
         public void delete(ProductInCart product) throws Exception {
             try {
                 for (int i = 0; i < this.productList.size(); i++) {
@@ -93,6 +97,7 @@
             }
         }
 
+        //Method for get product by name
         public ProductInCart GetProductByName(String name) throws Exception {
             try{
                 for (ProductInCart pro: this.productList) {
@@ -107,5 +112,6 @@
 
             return null;
         }
+
 
     }
